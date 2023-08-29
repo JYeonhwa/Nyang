@@ -1,6 +1,6 @@
 HELP.md
-user-server/.gradle
-post-server/.gradle
+.ini
+.gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
