@@ -1,13 +1,13 @@
-package com.example.Animaller;
+package com.nyang.nyangService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PostServiceApplication {
+public class NyangServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PostServiceApplication.class, args);
+		SpringApplication.run(NyangServiceApplication.class, args);
 	}
 
 }

@@ -1,10 +1,10 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '2.7.14'
+	id 'org.springframework.boot' version '2.7.15'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
-group = 'com.example'
+group = 'com.nyang'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -23,10 +23,9 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'mysql:mysql-connector-java:8.0.22'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

@@ -1,10 +1,10 @@
-package com.example.Animaller;
+package com.nyang.nyangService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AnimallerApplicationTests {
+class NyangServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
