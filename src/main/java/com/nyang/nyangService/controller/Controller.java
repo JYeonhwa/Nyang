@@ -22,7 +22,7 @@ public class Controller {
 
     @GetMapping("/users/hello")
     public String sayHello() {
-        return "성공했나";
+        return "성공했나?";
     }
     @PostMapping("/users/save")
     public void userSave(@RequestBody UserEntity user) {
