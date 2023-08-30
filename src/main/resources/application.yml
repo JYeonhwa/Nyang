@@ -8,7 +8,7 @@ spring:
     name: server
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://13.209.68.98:3306/nyang?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://54.180.101.221:3306/nyang?serverTimezone=Asia/Seoul
     username: nyang
     password: dr420138!
   jpa:
