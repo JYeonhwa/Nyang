@@ -18,7 +18,7 @@ public class PostEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Long userId;
+    private UserEntity userId;
 
     @Column(nullable = false)
     private int latitude;
