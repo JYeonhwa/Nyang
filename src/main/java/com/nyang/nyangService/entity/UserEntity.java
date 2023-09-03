@@ -16,8 +16,7 @@ import java.util.List;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Column
     private Long appleUserId;
@@ -40,7 +39,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String appleRefreshToken;
 
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "id")
     private List<PostEntity> posts = new ArrayList<>();
 
 }
