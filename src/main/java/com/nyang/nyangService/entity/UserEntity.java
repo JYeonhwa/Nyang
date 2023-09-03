@@ -14,10 +14,11 @@ import java.time.LocalDateTime;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column
-    private Long userId;
+    private Long appleUserId;
 
     @Column(nullable = false)
     private String nickname;
@@ -26,6 +27,15 @@ public class UserEntity {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
+    private LocalDateTime lastLoginAt;
+
+    @Column(nullable = false)
     private String userPic;
+
+    @Column(nullable = false)
+    private String appleAccessToken;
+
+    @Column(nullable = false)
+    private String appleRefreshToken;
 
 }
