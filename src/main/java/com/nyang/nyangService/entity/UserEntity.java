@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,5 +39,8 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String appleRefreshToken;
+
+    @OneToMany(mappedBy = "user_id")
+    private List<PostEntity> posts = new ArrayList<>();
 
 }
