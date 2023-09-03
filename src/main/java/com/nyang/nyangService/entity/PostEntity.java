@@ -16,7 +16,6 @@ public class PostEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Long userId;
