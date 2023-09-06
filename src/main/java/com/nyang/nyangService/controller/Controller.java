@@ -39,9 +39,14 @@ public class Controller {
     //회원가입
     @PostMapping("/users/save")
     public ResponseEntity<UserResponse.LoginSuccessDto> userSave(@RequestBody AppleUserDto.ClientAppleCode clientAppleCode) throws Exception {
+        log.info("회원가입 시작");
+        log.info(clientAppleCode.getIdentity_token());
+        log.info(clientAppleCode.getAuthorization_code());
         UserResponse.LoginSuccessDto loginSuccessDto
                 = appleService.getAppleInfo(clientAppleCode.getIdentity_token(), clientAppleCode.getAuthorization_code());
         String appleUserId = appleService.getUserData();
+        log.info("apple 서버 통신 완료");
+        log.info(appleUserId);
 
         Long number = userRepository.count()+1;
 
@@ -56,6 +61,7 @@ public class Controller {
                 .build();
 
         userRepository.save(userEntity);
+        log.info("회원가입 완료");
 
         return ResponseEntity.ok().body(loginSuccessDto);
     }

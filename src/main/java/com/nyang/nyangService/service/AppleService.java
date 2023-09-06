@@ -8,6 +8,7 @@ import com.nyang.nyangService.dto.UserResponse;
 //import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.json.JSONParser;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -36,6 +37,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.text.ParseException;
 import java.util.*;
 
+@Slf4j
 @Service
 public class AppleService {
     @Value("${apple.team.id}")
@@ -52,14 +54,15 @@ public class AppleService {
 
     private LinkedHashMap<String, Object> data;
 
-    public String getAppleLogin() {
-        return APPLE_AUTH_URL + "/auth/authorize" +
-                "?client_id=" + APPLE_CLIENT_ID +
-                "&redirect_url=" + APPLE_REDIRECT_URL +
-                "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
-    }
+//    public String getAppleLogin() {
+//        return APPLE_AUTH_URL + "/auth/authorize" +
+//                "?client_id=" + APPLE_CLIENT_ID +
+//                "&redirect_url=" + APPLE_REDIRECT_URL +
+//                "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+//    }
 
     public UserResponse.LoginSuccessDto getAppleInfo(String identityToken, String authorizationCode) throws Exception {
+        log.info("getAppleInfo 서비스 시작");
         if (identityToken == null || authorizationCode == null) throw new Exception("Failed get identity token or authorization code");
 
         String clientSecret = createClientSecret();
@@ -93,6 +96,7 @@ public class AppleService {
                     httpEntity,
                     String.class
             );
+            log.info("getAppleInfo 서비스 restapi 완");
 
             JSONParser jsonParser = new JSONParser(response.getBody());
 
@@ -103,6 +107,7 @@ public class AppleService {
             refreshToken = String.valueOf(data.get("refresh_token"));
 
             expireTime = Long.valueOf(String.valueOf(data.get("expires_in")));
+            log.info("getAppleInfo 서비스 jsonparse 완");
 
 
         } catch (Exception e) {
@@ -118,6 +123,7 @@ public class AppleService {
     }
 
     private String createClientSecret() throws Exception {
+        log.info("createClientSecret 서비스 시작");
         //apple login key로 JWT 만들기
         Date now = new Date();
 
@@ -131,11 +137,13 @@ public class AppleService {
                 .setSubject(APPLE_CLIENT_ID)
                 .signWith(SignatureAlgorithm.ES256, getPrivateKey())
                 .compact();
+        log.info("jwt 완성");
 
         return jwts;
     }
 
     private byte[] getPrivateKey() throws Exception {
+        log.info("getPrivateKey 시작");
 
         byte[] content = null;
         File file = null;
@@ -163,8 +171,10 @@ public class AppleService {
         } else {
             file = new File(res.getFile());
         }
+        log.info("getPrivateKey file byte");
 
         if (file.exists()) {
+            log.info("getPrivateKey file 존재");
             try (FileReader keyReader = new FileReader(file);
                  PemReader pemReader = new PemReader(keyReader))
             {
@@ -181,6 +191,7 @@ public class AppleService {
     }
 
     public String getUserData() {
+        log.info("getUserData 시작");
         JSONObject payload = null;
         //ID TOKEN을 통해 회원 고유 식별자 받기
 //            SignedJWT signedJWT = SignedJWT.parse(String.valueOf(data.get("id_token")));
@@ -190,8 +201,10 @@ public class AppleService {
         Map<String, Object> jsonArray = jsonParser.parseMap(decodedJWT);
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            payload = objectMapper.readValue(decodedJWT().toJSONString(), JSONObject.class);
+        log.info("jsonArray 완?");
 
-        return String.valueOf(payload.get("sub"));
+
+        return String.valueOf(jsonArray.get("sub"));
     }
 
 }
