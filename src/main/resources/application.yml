@@ -18,3 +18,15 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+
+apple:
+  team:
+    id: YYZ32L49X6
+  login:
+    key: P5UR7W5F7L
+  client:
+    id: com.ssafy.CatMap
+  redirect:
+    url: https://wenail.co.kr/apple/callback
+  key:
+    path: /key/AuthKey_P5UR7W5F7L.p8

@@ -1,8 +1,10 @@
 package com.nyang.nyangService.entity;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
+@Builder
 @Entity
 @Table(name="users_tb")
 public class UserEntity {
@@ -19,7 +21,7 @@ public class UserEntity {
     private Long userId;
 
     @Column
-    private Long appleUserId;
+    private String appleUserId;
 
     @Column(nullable = false)
     private String nickname;
@@ -27,7 +29,7 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime lastLoginAt;
 
     @Column(nullable = false)
@@ -40,6 +42,6 @@ public class UserEntity {
     private String appleRefreshToken;
 
     @OneToMany(mappedBy = "id")
-    private List<PostEntity> posts = new ArrayList<>();
+    private List<PostEntity> posts;
 
 }
