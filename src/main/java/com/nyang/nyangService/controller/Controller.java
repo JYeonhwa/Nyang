@@ -70,7 +70,7 @@ public class Controller {
     @PostMapping("/users/login")
     public ResponseEntity<UserResponse.LoginSuccessDto> userLogin(@RequestBody AppleUserDto.ClientAppleCode clientAppleCode) throws Exception {
         UserResponse.LoginSuccessDto loginSuccessDto
-                = appleService.getAppleInfo(clientAppleCode.getIdentity_token(), clientAppleCode.getAuthorization_code());
+                = appleService.getAppleInfo(clientAppleCode.getIdentityToken(), clientAppleCode.getAuthorizationCode());
 
         return ResponseEntity.ok().body(loginSuccessDto);
     }
