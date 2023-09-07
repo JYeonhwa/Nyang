@@ -40,10 +40,10 @@ public class Controller {
     @PostMapping("/users/save")
     public ResponseEntity<UserResponse.LoginSuccessDto> userSave(@RequestBody AppleUserDto.ClientAppleCode clientAppleCode) throws Exception {
         log.info("회원가입 시작");
-        log.info(clientAppleCode.getIdentity_token());
-        log.info(clientAppleCode.getAuthorization_code());
+        log.info(clientAppleCode.getIdentityToken());
+        log.info(clientAppleCode.getAuthorizationCode());
         UserResponse.LoginSuccessDto loginSuccessDto
-                = appleService.getAppleInfo(clientAppleCode.getIdentity_token(), clientAppleCode.getAuthorization_code());
+                = appleService.getAppleInfo(clientAppleCode.getIdentityToken(), clientAppleCode.getAuthorizationCode());
         String appleUserId = appleService.getUserData();
         log.info("apple 서버 통신 완료");
         log.info(appleUserId);

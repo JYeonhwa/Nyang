@@ -29,8 +29,8 @@ public class AppleUserDto {
     @Getter
     @Setter
     public static class ClientAppleCode<T> {
-        private String identity_token;
-        private String authorization_code;
+        private String identityToken;
+        private String authorizationCode;
     }
 
     @Getter
