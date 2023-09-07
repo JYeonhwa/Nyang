@@ -136,7 +136,7 @@ public class AppleService {
                 .setExpiration(new Date(now.getTime() + 3600000))
                 .setAudience(APPLE_AUTH_URL)
                 .setSubject(APPLE_CLIENT_ID)
-                .signWith(SignatureAlgorithm.ES256, getPrivateKey())
+                .signWith(SignatureAlgorithm.HS256, getPrivateKey())
                 .compact();
         log.info("jwt 완성");
         log.info(jwts);
