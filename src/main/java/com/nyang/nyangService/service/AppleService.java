@@ -84,6 +84,7 @@ public class AppleService {
             params.add("client_secret", clientSecret);
             params.add("code"         , authorizationCode);
             params.add("redirect_uri" , APPLE_REDIRECT_URL);
+            log.info("getAppleInfo 서비스 헤더 및 파라미터 생성 완");
 
 
             //http 구조 만들기
@@ -135,7 +136,7 @@ public class AppleService {
                 .setExpiration(new Date(now.getTime() + 3600000))
                 .setAudience(APPLE_AUTH_URL)
                 .setSubject(APPLE_CLIENT_ID)
-                .signWith(SignatureAlgorithm.HS256, getPrivateKey())
+                .signWith(SignatureAlgorithm.ES256, getPrivateKey())
                 .compact();
         log.info("jwt 완성");
         log.info(jwts);
