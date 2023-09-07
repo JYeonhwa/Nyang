@@ -138,6 +138,7 @@ public class AppleService {
                 .signWith(SignatureAlgorithm.HS256, getPrivateKey())
                 .compact();
         log.info("jwt 완성");
+        log.info(jwts);
         return jwts;
     }
 
