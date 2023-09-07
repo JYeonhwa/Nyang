@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .authorizeRequests()
                 .requestMatchers().permitAll()
-                .antMatchers("/user/**").permitAll();
+                .antMatchers("/users/**").permitAll();
     }
 
 //    @Override
