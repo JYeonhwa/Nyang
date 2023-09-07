@@ -3,14 +3,14 @@ package com.nyang.nyangService.dto;
 //import com.nyang.nyangService.auth.jwt.JwtProvider;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 //import javax.validation.constraints.NotEmpty;
 
 public class UserResponse {
 
 //    private JwtProvider jwtProvider;
-    private UserDetails userDetails;
+//    private UserDetails userDetails;
 
     @Getter
     @Builder
