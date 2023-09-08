@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -153,7 +154,7 @@ public class AppleService {
         SignedJWT jwt = new SignedJWT(header, claimsSet);
         try {
             log.info("createClientSecret jwt와 ECPrivatekey 만들기 시작");
-            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl(getPrivateKey());
+            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl(getPrivateKey(APPLE_KEY_PATH));
             JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey.getS());
             jwt.sign(jwsSigner);
             log.info("createClientSecret jwt 사인 완료");
@@ -178,50 +179,64 @@ public class AppleService {
         return jwt.serialize();
     }
 
-    private byte[] getPrivateKey() throws Exception {
+    private static byte[] getPrivateKey(String path) {
         log.info("getPrivateKey 시작");
 
+        Resource resource = new ClassPathResource(path);
         byte[] content = null;
-        File file = null;
 
-        URL res = getClass().getResource(APPLE_KEY_PATH);
-
-        if ("jar".equals(res.getProtocol())) {
-            try {
-                InputStream input = getClass().getResourceAsStream(APPLE_KEY_PATH);
-                file = File.createTempFile("tempfile", ".tmp");
-                OutputStream out = new FileOutputStream(file);
-
-                int read;
-                byte[] bytes = new byte[1024];
-
-                while ((read = input.read(bytes)) != -1) {
-                    out.write(bytes, 0, read);
-                }
-
-                out.close();
-                file.deleteOnExit();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            file = new File(res.getFile());
+        try (FileReader keyReader = new FileReader(resource.getFile());
+        PemReader pemReader = new PemReader(keyReader)) {
+            PemObject pemObject = pemReader.readPemObject();
+            content = pemObject.getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        log.info("getPrivateKey file byte");
 
-        if (file.exists()) {
-            log.info("getPrivateKey file 존재");
-            try (FileReader keyReader = new FileReader(file);
-                 PemReader pemReader = new PemReader(keyReader))
-            {
-                PemObject pemObject = pemReader.readPemObject();
-                content = pemObject.getContent();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            throw new Exception("File " + file + " not found");
-        }
+        log.info("private key 완성");
+
+//
+//
+//        File file = null;
+//
+//        URL res = getClass().getResource(path);
+//
+//        if ("jar".equals(res.getProtocol())) {
+//            try {
+//                InputStream input = getClass().getResourceAsStream(path);
+//                file = File.createTempFile("tempfile", ".tmp");
+//                OutputStream out = new FileOutputStream(file);
+//
+//                int read;
+//                byte[] bytes = new byte[1024];
+//
+//                while ((read = input.read(bytes)) != -1) {
+//                    out.write(bytes, 0, read);
+//                }
+//
+//                out.close();
+//                file.deleteOnExit();
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        } else {
+//            file = new File(res.getFile());
+//        }
+//        log.info("getPrivateKey file byte");
+//
+//        if (file.exists()) {
+//            log.info("getPrivateKey file 존재");
+//            try (FileReader keyReader = new FileReader(file);
+//                 PemReader pemReader = new PemReader(keyReader))
+//            {
+//                PemObject pemObject = pemReader.readPemObject();
+//                content = pemObject.getContent();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            throw new Exception("File " + file + " not found");
+//        }
 
         return content;
     }
