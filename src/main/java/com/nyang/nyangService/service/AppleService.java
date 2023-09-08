@@ -41,7 +41,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.ParseException;
 import java.util.*;
 
@@ -154,13 +158,12 @@ public class AppleService {
         SignedJWT jwt = new SignedJWT(header, claimsSet);
         try {
             log.info("createClientSecret jwt와 ECPrivatekey 만들기 시작");
-            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl(getPrivateKey(APPLE_KEY_PATH));
-            JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey.getS());
+
+//            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl();
+            JWSSigner jwsSigner = new ECDSASigner(getPrivateKey(APPLE_KEY_PATH).getS());
             jwt.sign(jwsSigner);
             log.info("createClientSecret jwt 사인 완료");
 
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
         } catch (JOSEException e) {
             e.printStackTrace();
         }
@@ -179,7 +182,7 @@ public class AppleService {
         return jwt.serialize();
     }
 
-    private static byte[] getPrivateKey(String path) {
+    private ECPrivateKey getPrivateKey(String path) throws NoSuchAlgorithmException, InvalidKeySpecException {
         log.info("getPrivateKey 시작");
 
         Resource resource = new ClassPathResource(path);
@@ -189,56 +192,19 @@ public class AppleService {
         PemReader pemReader = new PemReader(keyReader)) {
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(content);
+
         log.info("private key 완성");
 
-//
-//
-//        File file = null;
-//
-//        URL res = getClass().getResource(path);
-//
-//        if ("jar".equals(res.getProtocol())) {
-//            try {
-//                InputStream input = getClass().getResourceAsStream(path);
-//                file = File.createTempFile("tempfile", ".tmp");
-//                OutputStream out = new FileOutputStream(file);
-//
-//                int read;
-//                byte[] bytes = new byte[1024];
-//
-//                while ((read = input.read(bytes)) != -1) {
-//                    out.write(bytes, 0, read);
-//                }
-//
-//                out.close();
-//                file.deleteOnExit();
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//        } else {
-//            file = new File(res.getFile());
-//        }
-//        log.info("getPrivateKey file byte");
-//
-//        if (file.exists()) {
-//            log.info("getPrivateKey file 존재");
-//            try (FileReader keyReader = new FileReader(file);
-//                 PemReader pemReader = new PemReader(keyReader))
-//            {
-//                PemObject pemObject = pemReader.readPemObject();
-//                content = pemObject.getContent();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            throw new Exception("File " + file + " not found");
-//        }
 
-        return content;
+        return (ECPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 
     public String getUserData() {
