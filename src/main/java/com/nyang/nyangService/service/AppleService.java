@@ -190,8 +190,12 @@ public class AppleService {
 
         try (FileReader keyReader = new FileReader(resource.getFile());
         PemReader pemReader = new PemReader(keyReader)) {
+            log.info("pem 읽기 시작");
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
+            log.info("pem 읽기 완료");
+            log.info(path);
+            log.info(content.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
