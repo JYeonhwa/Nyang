@@ -134,7 +134,7 @@ public class AppleService {
                 .build();
     }
 
-    private String createClientSecret() throws Exception {
+    public String createClientSecret() throws Exception {
         log.info("createClientSecret 서비스 시작");
         //apple login key로 JWT 만들기
         Date now = new Date();
