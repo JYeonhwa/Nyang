@@ -188,9 +188,12 @@ public class AppleService {
         Resource resource = new ClassPathResource(path);
         byte[] content = null;
 
-        try (FileReader keyReader = new FileReader(resource.getFile());
-        PemReader pemReader = new PemReader(keyReader)) {
+        try {
             log.info("pem 읽기 시작");
+            FileReader keyReader = new FileReader(resource.getFile());
+            log.info(keyReader.toString());
+            PemReader pemReader = new PemReader(keyReader);
+            log.info(pemReader.toString());
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
             log.info("pem 읽기 완료");
