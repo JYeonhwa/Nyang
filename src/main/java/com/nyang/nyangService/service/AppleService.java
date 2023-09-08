@@ -4,6 +4,13 @@ package com.nyang.nyangService.service;
 //import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 //import com.nimbusds.jwt.SignedJWT;
 //import com.nyang.nyangService.dto.AppleUserDto;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.nyang.nyangService.dto.UserResponse;
 //import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -90,6 +97,8 @@ public class AppleService {
             //http 구조 만들기
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+
             //response 구조 만들기
             ResponseEntity<String> response = restTemplate.exchange(
                     APPLE_AUTH_URL + "/auth/token",
@@ -112,6 +121,7 @@ public class AppleService {
 
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("API call failed");
         }
 
@@ -128,19 +138,44 @@ public class AppleService {
         //apple login key로 JWT 만들기
         Date now = new Date();
 
-        String jwts = Jwts.builder()
-                .setHeaderParam("kid", APPLE_LOGIN_KEY)
-                .setHeaderParam("alg", "ES256")
-                .setIssuer(APPLE_TEAM_ID)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 3600000))
-                .setAudience(APPLE_AUTH_URL)
-                .setSubject(APPLE_CLIENT_ID)
-                .signWith(SignatureAlgorithm.HS256, getPrivateKey())
-                .compact();
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(APPLE_CLIENT_ID).build();
+        JWTClaimsSet claimsSet = new JWTClaimsSet();
+
+        claimsSet.setIssuer(APPLE_TEAM_ID);
+        claimsSet.setIssueTime(now);
+        claimsSet.setExpirationTime(new Date(now.getTime() + 3600000));
+        claimsSet.setAudience(APPLE_AUTH_URL);
+        claimsSet.setSubject(APPLE_CLIENT_ID);
+        log.info("createClientSecret 헤더랑 클레임셋 완성");
+
+
+
+        SignedJWT jwt = new SignedJWT(header, claimsSet);
+        try {
+            log.info("createClientSecret jwt와 ECPrivatekey 만들기 시작");
+            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl(getPrivateKey());
+            JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey.getS());
+            jwt.sign(jwsSigner);
+            log.info("createClientSecret jwt 사인 완료");
+
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (JOSEException e) {
+            e.printStackTrace();
+        }
+
+//        String jwts = Jwts.builder()
+//                .setHeaderParam("kid", APPLE_LOGIN_KEY)
+//                .setHeaderParam("alg", "ES256")
+//                .setIssuer(APPLE_TEAM_ID)
+//                .setIssuedAt(now)
+//                .setExpiration(new Date(now.getTime() + 3600000))
+//                .setAudience(APPLE_AUTH_URL)
+//                .setSubject(APPLE_CLIENT_ID)
+//                .signWith(SignatureAlgorithm.HS256, getPrivateKey())
+//                .compact();
         log.info("jwt 완성");
-        log.info(jwts);
-        return jwts;
+        return jwt.serialize();
     }
 
     private byte[] getPrivateKey() throws Exception {
