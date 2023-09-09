@@ -184,11 +184,12 @@ public class AppleService {
 
     private ECPrivateKey getPrivateKey(String path) throws NoSuchAlgorithmException, InvalidKeySpecException {
         log.info("getPrivateKey 시작");
+        log.info(path);
 
         Resource resource = new ClassPathResource(path);
         byte[] content = null;
         try {
-            log.info(String.valueOf(resource.getFile()));
+            log.info(resource.toString());
             log.info("pem 읽기 시작");
             FileReader keyReader = new FileReader(resource.getFile());
             log.info(keyReader.toString());
