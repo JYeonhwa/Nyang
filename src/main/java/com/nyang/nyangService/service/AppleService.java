@@ -13,8 +13,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nyang.nyangService.dto.UserResponse;
 //import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.json.JSONParser;
@@ -25,6 +23,7 @@ import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,20 +32,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import sun.security.ec.ECPrivateKeyImpl;
 
 
 import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
@@ -64,7 +57,13 @@ public class AppleService {
     private String APPLE_KEY_PATH;
     private final static String APPLE_AUTH_URL = "https://appleid.apple.com";
 
+    private final ResourceLoader resourceLoader;
+
     private LinkedHashMap<String, Object> data;
+
+    public AppleService(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
 //    public String getAppleLogin() {
 //        return APPLE_AUTH_URL + "/auth/authorize" +
@@ -186,10 +185,10 @@ public class AppleService {
         log.info("getPrivateKey 시작");
         log.info(path);
 
-        Resource resource = new ClassPathResource(path);
+
+        Resource resource = resourceLoader.getResource(path);
         byte[] content = null;
         try {
-            log.info(resource.toString());
             log.info("pem 읽기 시작");
             FileReader keyReader = new FileReader(resource.getFile());
             log.info(keyReader.toString());
@@ -202,6 +201,8 @@ public class AppleService {
             log.info(content.toString());
 
         } catch (IOException e) {
+            log.info(resource.toString());
+//            log.info();
             e.printStackTrace();
         }
 
