@@ -187,8 +187,8 @@ public class AppleService {
 
         Resource resource = new ClassPathResource(path);
         byte[] content = null;
-
         try {
+            log.info(String.valueOf(resource.getFile()));
             log.info("pem 읽기 시작");
             FileReader keyReader = new FileReader(resource.getFile());
             log.info(keyReader.toString());
