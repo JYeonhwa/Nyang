@@ -29,4 +29,4 @@ apple:
   redirect:
     url: https://wenail.co.kr/apple/callback
   key:
-    path: /home/ubuntu/key/AuthKey_P5UR7W5F7L.p8
+    path: file:/home/ubuntu/key/AuthKey_P5UR7W5F7L.p8
