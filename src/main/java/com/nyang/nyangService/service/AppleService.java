@@ -190,6 +190,7 @@ public class AppleService {
         byte[] content = null;
         try {
             log.info("pem 읽기 시작");
+            log.info(resource.getFilename());
             FileReader keyReader = new FileReader(resource.getFile());
             log.info(keyReader.toString());
             PemReader pemReader = new PemReader(keyReader);
@@ -203,7 +204,7 @@ public class AppleService {
         } catch (IOException e) {
             log.info(resource.toString());
 //            log.info();
-            e.printStackTrace();
+            log.error("IOException occurred while reading the PEM file: " + e.getMessage(), e);;
         }
 
 
