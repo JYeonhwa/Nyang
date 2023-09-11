@@ -186,14 +186,15 @@ public class AppleService {
         log.info(path);
 
 
-        Resource resource = resourceLoader.getResource(path);
+//        Resource resource = resourceLoader.getResource(path);
+        ClassPathResource resource = new ClassPathResource(path);
         byte[] content = null;
-        try {
+        try (InputStream inputStream = resource.getInputStream()) {
             log.info("pem 읽기 시작");
-            log.info(resource.getFilename());
-            FileReader keyReader = new FileReader(resource.getFile());
-            log.info(keyReader.toString());
-            PemReader pemReader = new PemReader(keyReader);
+//            log.info(resource.getFilename());
+//            FileReader keyReader = new FileReader();
+//            log.info(keyReader.toString());
+            PemReader pemReader = new PemReader(new InputStreamReader(inputStream));
             log.info(pemReader.toString());
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
