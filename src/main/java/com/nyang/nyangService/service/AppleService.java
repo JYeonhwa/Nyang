@@ -18,6 +18,7 @@ import com.nyang.nyangService.dto.IdentityToken;
 import com.nyang.nyangService.dto.Keys;
 import com.nyang.nyangService.dto.UserResponse;
 //import io.jsonwebtoken.JwtBuilder;
+import com.nyang.nyangService.repository.UserRepository;
 import com.nyang.nyangService.utils.HttpClientUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -82,7 +83,7 @@ public class AppleService {
 //                "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
 //    }
 
-    public UserResponse.LoginSuccessDto getAppleInfo(String identityToken, String authorizationCode) throws Exception {
+    public LinkedHashMap<String, Object> getAppleInfo(String identityToken, String authorizationCode) throws Exception {
         log.info("getAppleInfo 서비스 시작");
         if (identityToken == null || authorizationCode == null) throw new Exception("Failed get identity token or authorization code");
 
@@ -131,39 +132,22 @@ public class AppleService {
 
             data = jsonParser.parseObject();
 
-            log.info(data.get("id_token").toString());
-
-
-            accessToken = String.valueOf(data.get("access_token"));
-
-            refreshToken = String.valueOf(data.get("refresh_token"));
-
-            expireTime = Long.valueOf(String.valueOf(data.get("expires_in")));
-
-            log.info(accessToken);
-            log.info(refreshToken);
-
-
-            UserService.userSave(String.valueOf(data.get("id_token")), accessToken, refreshToken);
-
 
 
             log.info("getAppleInfo 서비스 jsonparse 완");
-
 
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Exception: " + e.getMessage(), e);
             throw new Exception("API call or userSave failed");
         }
-        return UserResponse.LoginSuccessDto.builder()
-                .type("Bearer")
-                .appleAccessToken(accessToken)
-                .appleRefreshToken(refreshToken)
-                .refreshTokenExpirationTime(expireTime)
-                .build();
+        return data;
 
     }
+
+//    public void userSave(String id_token, String accessToken, String refreshToken) {
+//        userSave(id_token, accessToken, refreshToken);
+//    }
 
     public String createClientSecret(String identityToken) throws Exception {
         log.info("createClientSecret 서비스 시작");
