@@ -62,6 +62,7 @@ public class UserService {
                 .posts(posts)
                 .build();
 
+        log.info(userEntity.toString());
         userRepository.save(userEntity);
         log.info("냥냥" + number.toString() + " 생성");
         log.info("회원가입 완료");

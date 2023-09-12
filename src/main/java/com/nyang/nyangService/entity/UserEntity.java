@@ -1,6 +1,7 @@
 package com.nyang.nyangService.entity;
 
 
+import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,24 +21,30 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @NotNull
     @Column
     private String appleUserId;
 
+    @NotNull
     @Column(nullable = false)
     private String nickname;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column
     private LocalDateTime lastLoginAt;
 
+    @NotNull
     @Column(nullable = false)
     private String userPic;
 
+    @NotNull
     @Column(nullable = false)
     private String appleAccessToken;
 
+    @NotNull
     @Column(nullable = false)
     private String appleRefreshToken;
 
