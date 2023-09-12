@@ -153,6 +153,7 @@ public class AppleService {
 
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("Exception: " + e.getMessage(), e);
             throw new Exception("API call failed");
         }
         return UserResponse.LoginSuccessDto.builder()
