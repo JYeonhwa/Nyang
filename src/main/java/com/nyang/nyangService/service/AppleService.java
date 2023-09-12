@@ -154,7 +154,7 @@ public class AppleService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Exception: " + e.getMessage(), e);
-            throw new Exception("API call failed");
+            throw new Exception("API call or userSave failed");
         }
         return UserResponse.LoginSuccessDto.builder()
                 .type("Bearer")
