@@ -4,15 +4,21 @@ package com.nyang.nyangService.service;
 //import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 //import com.nimbusds.jwt.SignedJWT;
 //import com.nyang.nyangService.dto.AppleUserDto;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.nyang.nyangService.dto.AppleUserDto;
+import com.nyang.nyangService.dto.IdentityToken;
+import com.nyang.nyangService.dto.Keys;
 import com.nyang.nyangService.dto.UserResponse;
 //import io.jsonwebtoken.JwtBuilder;
+import com.nyang.nyangService.utils.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.json.JSONParser;
@@ -38,8 +44,10 @@ import java.io.*;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
@@ -76,12 +84,16 @@ public class AppleService {
         log.info("getAppleInfo 서비스 시작");
         if (identityToken == null || authorizationCode == null) throw new Exception("Failed get identity token or authorization code");
 
-        String clientSecret = createClientSecret();
+
+        String clientSecret = createClientSecret(identityToken);
         String userId = "";
         String email  = "";
         String accessToken = "";
         String refreshToken = "";
         Long expireTime;
+
+
+
 
         try {
             //헤더 생성
@@ -93,9 +105,10 @@ public class AppleService {
             params.add("grant_type"   , "authorization_code");
             params.add("client_id"    , APPLE_CLIENT_ID);
             params.add("client_secret", clientSecret);
-            params.add("code"         , authorizationCode);
-            params.add("redirect_uri" , APPLE_REDIRECT_URL);
+            params.add("code"         , authorizationCode.trim());
+//            params.add("redirect_uri" , APPLE_REDIRECT_URL);
             log.info("getAppleInfo 서비스 헤더 및 파라미터 생성 완");
+            log.info(params.toString());
 
 
             //http 구조 만들기
@@ -137,35 +150,37 @@ public class AppleService {
                 .build();
     }
 
-    public String createClientSecret() throws Exception {
+    public String createClientSecret(String identityToken) throws Exception {
         log.info("createClientSecret 서비스 시작");
-        //apple login key로 JWT 만들기
-        Date now = new Date();
 
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(APPLE_CLIENT_ID).build();
-        JWTClaimsSet claimsSet = new JWTClaimsSet();
+        if (verifyIdentityToken(identityToken)) {
 
-        claimsSet.setIssuer(APPLE_TEAM_ID);
-        claimsSet.setIssueTime(now);
-        claimsSet.setExpirationTime(new Date(now.getTime() + 3600000));
-        claimsSet.setAudience(APPLE_AUTH_URL);
-        claimsSet.setSubject(APPLE_CLIENT_ID);
-        log.info("createClientSecret 헤더랑 클레임셋 완성");
+            //apple login key로 JWT 만들기
+            Date now = new Date();
+
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(APPLE_CLIENT_ID).build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet();
+
+            claimsSet.setIssuer(APPLE_TEAM_ID);
+            claimsSet.setIssueTime(now);
+            claimsSet.setExpirationTime(new Date(now.getTime() + 7948800));
+            claimsSet.setAudience(APPLE_AUTH_URL);
+            claimsSet.setSubject(APPLE_CLIENT_ID);
+            log.info("createClientSecret 헤더랑 클레임셋 완성");
 
 
+            SignedJWT jwt = new SignedJWT(header, claimsSet);
+            try {
+                log.info("createClientSecret jwt와 ECPrivatekey 만들기 시작");
 
-        SignedJWT jwt = new SignedJWT(header, claimsSet);
-        try {
-            log.info("createClientSecret jwt와 ECPrivatekey 만들기 시작");
+                //            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl();
+                JWSSigner jwsSigner = new ECDSASigner(getPrivateKey(APPLE_KEY_PATH).getS());
+                jwt.sign(jwsSigner);
+                log.info("createClientSecret jwt 사인 완료");
 
-//            ECPrivateKey ecPrivateKey = new ECPrivateKeyImpl();
-            JWSSigner jwsSigner = new ECDSASigner(getPrivateKey(APPLE_KEY_PATH).getS());
-            jwt.sign(jwsSigner);
-            log.info("createClientSecret jwt 사인 완료");
-
-        } catch (JOSEException e) {
-            e.printStackTrace();
-        }
+            } catch (JOSEException e) {
+                e.printStackTrace();
+            }
 
 //        String jwts = Jwts.builder()
 //                .setHeaderParam("kid", APPLE_LOGIN_KEY)
@@ -177,8 +192,10 @@ public class AppleService {
 //                .setSubject(APPLE_CLIENT_ID)
 //                .signWith(SignatureAlgorithm.HS256, getPrivateKey())
 //                .compact();
-        log.info("jwt 완성");
-        return jwt.serialize();
+            log.info("jwt 완성");
+            return jwt.serialize();
+        }
+        return "createClientSecret is weird...";
     }
 
     private ECPrivateKey getPrivateKey(String path) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -216,6 +233,65 @@ public class AppleService {
 
 
         return (ECPrivateKey) keyFactory.generatePrivate(keySpec);
+    }
+
+    public boolean verifyIdentityToken(String identityToken) {
+        log.info("verifyIdentityToken 시작");
+        log.info(identityToken);
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(identityToken);
+            ReadOnlyJWTClaimsSet payload = signedJWT.getJWTClaimsSet();
+            log.info(payload.toJSONObject().toJSONString());
+
+            Date now = new Date(System.currentTimeMillis());
+            if (!now.before(payload.getExpirationTime())) {
+                log.info("f1");
+                return false;
+            }
+            if (!"https://appleid.apple.com".equals(payload.getIssuer()) || !APPLE_CLIENT_ID.equals(payload.getAudience().get(0))) {
+                log.info("f2");
+                log.info(payload.getIssuer());
+                log.info(payload.getAudience().get(0));
+                return false;
+            }
+            if (verifyPublicKey(signedJWT)) {
+                log.info("true");
+                return true;
+            }
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+    }
+
+    public boolean verifyPublicKey(SignedJWT signedJWT) {
+        log.info("verifyPublickKey");
+        //https://appleid.apple.com/auth/keys
+        try {
+            String publicKeys = HttpClientUtils.doGet("https://appleid.apple.com/auth/keys");
+            log.info(publicKeys);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Keys keys = objectMapper.readValue(publicKeys, Keys.class);
+            for (IdentityToken key : keys.getKeys()) {
+                RSAKey rsaKey = (RSAKey) JWK.parse(objectMapper.writeValueAsString(key));
+                RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
+                JWSVerifier verifier = new RSASSAVerifier(publicKey);
+
+                if (signedJWT.verify(verifier)) {
+
+                    log.info("true");
+
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public String getUserData() {
