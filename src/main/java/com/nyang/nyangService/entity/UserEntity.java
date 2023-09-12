@@ -42,6 +42,6 @@ public class UserEntity {
     private String appleRefreshToken;
 
     @OneToMany(mappedBy = "id")
-    private ArrayList<PostEntity> posts;
+    private List<PostEntity> posts;
 
 }

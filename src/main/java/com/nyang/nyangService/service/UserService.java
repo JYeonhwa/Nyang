@@ -3,6 +3,7 @@ package com.nyang.nyangService.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.nyang.nyangService.entity.PostEntity;
 import com.nyang.nyangService.entity.UserEntity;
 import com.nyang.nyangService.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -47,6 +49,8 @@ public class UserService {
         log.info(accessToken);
         log.info(refreshToken);
 
+        List<PostEntity> posts = new ArrayList<>();
+
         UserEntity userEntity = UserEntity.builder()
                 .appleUserId(appleUserId)
                 .nickname("냥냥" + number.toString())
@@ -55,7 +59,7 @@ public class UserService {
                 .userPic("dd")
                 .appleAccessToken(accessToken)
                 .appleRefreshToken(refreshToken)
-                .posts(new ArrayList<>())
+                .posts(posts)
                 .build();
 
         userRepository.save(userEntity);
