@@ -31,13 +31,13 @@ public class UserService {
         String appleUserId = String.valueOf(payload.get("sub"));
         log.info(appleUserId);
 
-        Long number = userRepository.count();
+        Long number;
 
-        if (number == null) {
+        try {
+            number = userRepository.count() + 1;
+        } catch (Exception e) {
             number = 1L;
         }
-
-        number = number + 1;
 
         UserEntity userEntity = UserEntity.builder()
                 .appleUserId(appleUserId)
