@@ -131,11 +131,23 @@ public class AppleService {
 
             data = jsonParser.parseObject();
 
+            log.info(data.get("id_token").toString());
+
+
             accessToken = String.valueOf(data.get("access_token"));
 
             refreshToken = String.valueOf(data.get("refresh_token"));
 
             expireTime = Long.valueOf(String.valueOf(data.get("expires_in")));
+
+            log.info(accessToken);
+            log.info(refreshToken);
+
+
+            UserService.userSave(String.valueOf(data.get("id_token")), accessToken, refreshToken);
+
+
+
             log.info("getAppleInfo 서비스 jsonparse 완");
 
 
@@ -143,13 +155,13 @@ public class AppleService {
             e.printStackTrace();
             throw new Exception("API call failed");
         }
-
         return UserResponse.LoginSuccessDto.builder()
                 .type("Bearer")
                 .appleAccessToken(accessToken)
                 .appleRefreshToken(refreshToken)
                 .refreshTokenExpirationTime(expireTime)
                 .build();
+
     }
 
     public String createClientSecret(String identityToken) throws Exception {
@@ -303,6 +315,7 @@ public class AppleService {
 //            SignedJWT signedJWT = SignedJWT.parse(String.valueOf(data.get("id_token")));
 //            ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
         String decodedJWT = new String(Base64.getUrlDecoder().toString());
+        log.info(decodedJWT);
         JsonParser jsonParser = new BasicJsonParser();
         Map<String, Object> jsonArray = jsonParser.parseMap(decodedJWT);
 //            ObjectMapper objectMapper = new ObjectMapper();

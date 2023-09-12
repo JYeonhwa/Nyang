@@ -44,24 +44,10 @@ public class Controller {
         log.info(clientAppleCode.getAuthorizationCode());
         UserResponse.LoginSuccessDto loginSuccessDto
                 = appleService.getAppleInfo(clientAppleCode.getIdentityToken(), clientAppleCode.getAuthorizationCode());
-        String appleUserId = appleService.getUserData();
+//        String appleUserId = appleService.getUserData();
         log.info("apple 서버 통신 완료");
-        log.info(appleUserId);
 
-        Long number = userRepository.count()+1;
 
-        UserEntity userEntity = UserEntity.builder()
-                .appleUserId(appleUserId)
-                .nickname("냥냥" + number.toString())
-                .createdAt(LocalDateTime.now())
-                .lastLoginAt(LocalDateTime.now())
-                .userPic("dd")
-                .appleAccessToken(loginSuccessDto.getAppleAccessToken())
-                .appleRefreshToken(loginSuccessDto.getAppleRefreshToken())
-                .build();
-
-        userRepository.save(userEntity);
-        log.info("회원가입 완료");
 
         return ResponseEntity.ok().body(loginSuccessDto);
     }
