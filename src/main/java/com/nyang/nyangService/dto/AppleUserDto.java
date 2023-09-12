@@ -1,30 +1,15 @@
 package com.nyang.nyangService.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class AppleUserDto {
-    private List<IdentityToken> keys;
-    @Getter
-    @Setter
-    public class IdentityToken<T> {
-        private String kty;
-        private String kid;
-        private String use;
-        private String alg;
-        private String n;
-        private String e;
-    }
 
-    public Optional<AppleUserDto.IdentityToken> getMatchedKeyBy(String kid, String alg) {
-        return this.keys.stream()
-                .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
-                .findFirst();
-    }
+
+@NoArgsConstructor
+public class AppleUserDto {
 
     @Getter
     @Setter
@@ -40,4 +25,7 @@ public class AppleUserDto {
         private T response;
         private String message;
     }
+
+
 }
+

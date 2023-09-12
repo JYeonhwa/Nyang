@@ -40,6 +40,7 @@ dependencies {
 
 	//Apple Login
 	implementation 'com.nimbusds:nimbus-jose-jwt:3.10'
+	implementation 'org.apache.httpcomponents:httpclient'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	annotationProcessor 'org.projectlombok:lombok'
