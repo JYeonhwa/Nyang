@@ -1,6 +1,5 @@
 package com.nyang.nyangService.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -9,11 +8,13 @@ import com.nyang.nyangService.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class UserService {
     private static UserRepository userRepository;
