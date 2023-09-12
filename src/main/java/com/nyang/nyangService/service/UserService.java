@@ -39,6 +39,11 @@ public class UserService {
         } catch (Exception e) {
             number = 1L;
         }
+        log.info("----------------null exception 왜 나냐-----------------");
+        log.info(appleUserId);
+        log.info(number.toString());
+        log.info(accessToken);
+        log.info(refreshToken);
 
         UserEntity userEntity = UserEntity.builder()
                 .appleUserId(appleUserId)
