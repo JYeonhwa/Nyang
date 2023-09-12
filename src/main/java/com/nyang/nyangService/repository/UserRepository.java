@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 
-    Optional<UserEntity> findByAppleId(String userAppleId);
-    boolean existsByAppleId(String userAppleId);
+    Optional<UserEntity> findByAppleUserId(String appleUserId);
+    boolean existsByAppleUserId(String appleUserId);
     boolean existsByNickname(String nickname);
 
 }
