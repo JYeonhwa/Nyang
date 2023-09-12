@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,7 @@ public class UserService {
                 .userPic("dd")
                 .appleAccessToken(accessToken)
                 .appleRefreshToken(refreshToken)
+                .posts(new ArrayList<>())
                 .build();
 
         userRepository.save(userEntity);
