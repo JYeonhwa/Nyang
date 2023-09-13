@@ -1,5 +1,6 @@
 package com.nyang.nyangService.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -27,18 +28,8 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserEntity userSave(String idToken, String accessToken, String refreshToken) throws ParseException, IOException {
+    public UserEntity userSave(String appleUserId, String accessToken, String refreshToken) throws ParseException, IOException {
         log.info("userSave 시작");
-        log.info(idToken);
-
-        SignedJWT signedJWT = SignedJWT.parse(idToken);
-        ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);
-
-        String appleUserId = String.valueOf(payload.get("sub"));
-        log.info(appleUserId);
 
         Long number;
 
@@ -66,5 +57,17 @@ public class UserService {
                 .posts(posts)
                 .build();
         return userEntity;
+    }
+
+    public String idTokenParsing(String idToken) throws ParseException, JsonProcessingException {
+        SignedJWT signedJWT = SignedJWT.parse(idToken);
+        ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);
+
+        String appleUserId = String.valueOf(payload.get("sub"));
+        log.info(appleUserId);
+        return appleUserId;
     }
 }

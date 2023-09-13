@@ -16,10 +16,9 @@ public class UserResponse {
     @Builder
     public static class LoginSuccessDto {
 
-        private String type;
+        private String nickname;
         private String appleAccessToken;
         private String appleRefreshToken;
-        private Long refreshTokenExpirationTime;
     };
 
     @Getter
