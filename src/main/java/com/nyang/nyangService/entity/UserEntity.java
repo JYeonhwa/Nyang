@@ -22,11 +22,11 @@ public class UserEntity {
     private Long userId;
 
     @NotNull
-    @Column
+    @Column(length=1000)
     private String appleUserId;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String nickname;
 
     @NotNull
@@ -37,15 +37,15 @@ public class UserEntity {
     private LocalDateTime lastLoginAt;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String userPic;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String appleAccessToken;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String appleRefreshToken;
 
     @OneToMany(mappedBy = "userId")
