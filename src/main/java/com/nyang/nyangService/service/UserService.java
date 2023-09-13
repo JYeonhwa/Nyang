@@ -9,6 +9,8 @@ import com.nyang.nyangService.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,9 +21,10 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Component
 @RequiredArgsConstructor
 public class UserService {
-    private static UserRepository userRepository;
+    private static final UserRepository userRepository = null;
 
     public static void userSave(String idToken, String accessToken, String refreshToken) throws ParseException, IOException {
         log.info("userSave 시작");
