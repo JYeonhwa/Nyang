@@ -1,5 +1,8 @@
 package com.nyang.nyangService.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.nyang.nyangService.dto.AppleUserDto;
 import com.nyang.nyangService.dto.UserDto;
 import com.nyang.nyangService.dto.UserResponse;
@@ -11,6 +14,7 @@ import com.nyang.nyangService.service.AppleService;
 import com.nyang.nyangService.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.parameters.P;
@@ -57,57 +61,32 @@ public class Controller {
 
         Long expireTime = Long.valueOf(String.valueOf(data.get("expires_in")));
 
-        String id_token = String.valueOf(data.get("id_token"));
+        String idToken = String.valueOf(data.get("id_token"));
         log.info(accessToken);
         log.info(refreshToken);
 
-        UserResponse.LoginSuccessDto loginSuccessDto = UserResponse.LoginSuccessDto.builder()
-                .type("Bearer")
-                .appleAccessToken(accessToken)
-                .appleRefreshToken(refreshToken)
-                .refreshTokenExpirationTime(expireTime)
-                .build();
+        String appleUserId = userService.idTokenParsing(idToken);
 
-        log.info("loginsuccessdto 만들어짐");
-        UserEntity userEntity = userService.userSave(id_token, accessToken, refreshToken);
+        if (!userRepository.existsByAppleUserId(appleUserId)) {
+            UserEntity userEntity = userService.userSave(appleUserId, accessToken, refreshToken);
+            userRepository.save(userEntity);
+            log.info(userEntity.getNickname() + " 생성");
+            log.info("userSave 완료");
+        } else {
+            log.info("이미 있는 user니까 update");
+            UserEntity user = userRepository.findByAppleUserId(appleUserId).get();
+            LocalDateTime now = LocalDateTime.now();
+            user.updateUser(user.getNickname(), user.getAppleAccessToken(), user.getAppleRefreshToken(), user.getUserPic(), now);
+            userRepository.save(user);
+            log.info("userupdate 완료");
+        }
 
-        log.info(userEntity.toString());
-        log.info(userRepository.toString());
-        userRepository.save(userEntity);
-        log.info(userEntity.getNickname() + " 생성");
-
-
-        log.info("userSave 완료");
-
-
-        return ResponseEntity.ok().body(loginSuccessDto);
-    }
-
-    //로그인
-    @PostMapping("/users/login")
-    public ResponseEntity<UserResponse.LoginSuccessDto> userLogin(@RequestBody AppleUserDto.ClientAppleCode clientAppleCode) throws Exception {
-        LinkedHashMap<String, Object> data
-                = appleService.getAppleInfo(clientAppleCode.getIdentityToken(), clientAppleCode.getAuthorizationCode());
-        log.info("apple 서버 통신 완료");
-
-        log.info(data.get("id_token").toString());
-
-
-        String accessToken = String.valueOf(data.get("access_token"));
-
-        String refreshToken = String.valueOf(data.get("refresh_token"));
-
-        Long expireTime = Long.valueOf(String.valueOf(data.get("expires_in")));
-
-        String id_token = String.valueOf(data.get("id_token"));
-        log.info(accessToken);
-        log.info(refreshToken);
+        UserEntity userData = userRepository.findByAppleUserId(appleUserId).get();
 
         UserResponse.LoginSuccessDto loginSuccessDto = UserResponse.LoginSuccessDto.builder()
-                .type("Bearer")
+                .nickname(userData.getNickname())
                 .appleAccessToken(accessToken)
                 .appleRefreshToken(refreshToken)
-                .refreshTokenExpirationTime(expireTime)
                 .build();
 
         log.info("loginsuccessdto 만들어짐");

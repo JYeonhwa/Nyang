@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +51,14 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "userId")
     private List<PostEntity> posts;
+
+
+    public void updateUser(String nickname, String appleAccessToken, String appleRefreshToken, String userPic, LocalDateTime lastLoginAt) {
+        this.nickname = nickname;
+        this.appleAccessToken = appleAccessToken;
+        this.appleRefreshToken = appleRefreshToken;
+        this.userPic = userPic;
+        this.lastLoginAt = lastLoginAt;
+    }
 
 }
