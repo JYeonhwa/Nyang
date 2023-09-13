@@ -4,6 +4,7 @@ package com.nyang.nyangService.entity;
 import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -14,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
+@SuperBuilder
 @Entity
 @Table(name="users_tb")
+@NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
