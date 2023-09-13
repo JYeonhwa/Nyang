@@ -69,7 +69,14 @@ public class Controller {
                 .build();
 
         log.info("loginsuccessdto 만들어짐");
-        userService.userSave(id_token, accessToken, refreshToken);
+        UserEntity userEntity = userService.userSave(id_token, accessToken, refreshToken);
+
+        log.info(userEntity.toString());
+        log.info(userRepository.toString());
+        userRepository.save(userEntity);
+        log.info(userEntity.getNickname() + " 생성");
+
+
         log.info("userSave 완료");
 
 
